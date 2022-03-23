@@ -110,8 +110,30 @@ exports.checkId = async (id) => {
       await mongoose.connect(DB_URL, connectOptions);
       let user = await User.findById(id);
       mongoose.disconnect();
-      if (user === null) return "User is not exist";
+      return user === null ? `There is no user with this id: ${id}` : user;
     } else return "User id is not valid";
+  } catch (err) {
+    mongoose.disconnect();
+    throw new Error(err);
+  }
+};
+
+exports.changePassword = async (id, password) => {
+  try {
+    await mongoose.connect(DB_URL, connectOptions);
+
+    //Encrypt user password
+    let hashedPassword = await bcrypt.hash(password, 10);
+
+    let res = await User.findByIdAndUpdate(
+      id,
+      {
+        password: hashedPassword,
+      },
+      { new: true }
+    );
+    mongoose.disconnect();
+    return res;
   } catch (err) {
     mongoose.disconnect();
     throw new Error(err);
