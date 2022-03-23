@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { userValidation } = require("../utils/validation");
+const { userValidation, passwordValidation } = require("../utils/validation");
 const generateAccessToken = require("../utils/token");
 const userModel = require("../models/user.model");
 const tokenModel = require("../models/token.model");
@@ -8,15 +8,16 @@ exports.getUser = async (req, res) => {
   try {
     let userId = req.params.id;
 
+    // Check user id
     let checkResult = await userModel.checkId(userId);
-    if (checkResult)
-      return res.status(200).send({
-        status: false,
-        message: checkResult,
-        data: null,
-      });
+    typeof checkResult === "string"
+      ? res.status(200).send({
+          status: false,
+          message: checkResult,
+          data: null,
+        })
+      : (user = checkResult);
 
-    let user = await userModel.getUserDetails(userId);
     let { password, ...others } = user._doc;
     res.status(200).json({
       status: true,
@@ -88,8 +89,13 @@ exports.login = async (req, res) => {
 
     // Check email and password
     if (!email || !password)
-      res.status(200).send("Email and password are required");
-    let validationResult = userValidation(req.body);
+      res.status(200).send({
+        status: false,
+        message: "Email and password are required",
+        data: null,
+      });
+
+    let validationResult = userValidation({ email });
     if (validationResult)
       return res.status(200).send({
         status: false,
@@ -184,16 +190,17 @@ exports.login = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    let id = req.params.id;
+    let { id } = req.params;
 
     // Check user id
     let checkResult = await userModel.checkId(id);
-    if (checkResult)
-      return res.status(200).send({
-        status: false,
-        message: checkResult,
-        data: null,
-      });
+    typeof checkResult === "string"
+      ? res.status(200).send({
+          status: false,
+          message: checkResult,
+          data: null,
+        })
+      : (user = checkResult);
 
     if (req.user._id === id) {
       let { username, email, phone, carInt, carStr } = req.body;
@@ -239,6 +246,58 @@ exports.updateUser = async (req, res) => {
       message: "Failed to update user",
       data: null,
     });
-    console.log(err);
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    let { id } = req.params;
+    let { oldPassword, newPassword } = req.body;
+
+    // Check user id
+    let checkResult = await userModel.checkId(id);
+    typeof checkResult === "string"
+      ? res.status(200).send({
+          status: false,
+          message: checkResult,
+          data: null,
+        })
+      : (user = checkResult);
+
+    if (req.user._id === id) {
+      let validationResult = passwordValidation(req.body);
+      if (validationResult)
+        return res.status(200).send({
+          status: false,
+          message: validationResult.details[0].message,
+          data: null,
+        });
+
+      // Check user old passowrd
+      let compareResult = await bcrypt.compare(oldPassword, user.password);
+      if (!compareResult)
+        return res.status(200).send({
+          status: false,
+          message: "Old password not correct",
+          data: null,
+        });
+      await userModel.changePassword(id, newPassword);
+      res.status(200).send({
+        status: true,
+        message: "Change password success",
+        data: null,
+      });
+    } else
+      return res.status(200).send({
+        status: false,
+        message: "You can only change your account password",
+        data: null,
+      });
+  } catch (err) {
+    res.status(200).send({
+      status: false,
+      message: "Failed to change password",
+      data: null,
+    });
   }
 };
