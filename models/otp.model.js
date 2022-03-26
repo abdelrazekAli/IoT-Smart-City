@@ -31,7 +31,8 @@ exports.checkOtp = async (email, otp) => {
   try {
     await mongoose.connect(DB_URL, connectOptions);
 
-    let result = await Otp.findOne({ email, otp });
+    let result = await Otp.findOne({ email: email, otp: otp });
+    console.log(result);
     mongoose.disconnect();
     return result;
   } catch (err) {
