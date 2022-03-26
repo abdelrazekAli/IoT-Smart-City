@@ -19,7 +19,7 @@ exports.getUser = async (req, res) => {
         })
       : (user = checkResult);
 
-    let { password, ...others } = user._doc;
+    let { password, isVerify, ...others } = user._doc;
     res.status(200).json({
       status: true,
       message: "",
@@ -67,7 +67,7 @@ exports.createNewUser = async (req, res) => {
         data: null,
       });
     } else {
-      let { password, ...data } = result._doc;
+      let { password, isVerify, ...data } = result._doc;
       res.status(200).send({
         status: true,
         message: "User successfully added",
@@ -194,7 +194,7 @@ exports.updateUser = async (req, res) => {
           data: null,
         });
       } else {
-        let { password, ...data } = result._doc;
+        let { password, isVerify, ...data } = result._doc;
         res.status(200).send({
           status: true,
           message: "Update success",
@@ -323,7 +323,7 @@ exports.verifyEmail = async (req, res) => {
       });
 
     let result = await userModel.verifyEmail(email);
-    let { password, ...data } = result._doc;
+    let { password, isVerify, ...data } = result._doc;
     res.status(200).send({
       status: true,
       message: "Email verify success",
