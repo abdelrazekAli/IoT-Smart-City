@@ -12,6 +12,10 @@ const userSchema = mongoose.Schema(
     phone: String,
     carInt: String,
     carStr: String,
+    isVerify: {
+      type: Boolean,
+      default: false,
+    },
   },
   { versionKey: false } //To ignore __v
 );
@@ -132,6 +136,26 @@ exports.changePassword = async (id, password) => {
       },
       { new: true }
     );
+    mongoose.disconnect();
+    return res;
+  } catch (err) {
+    mongoose.disconnect();
+    throw new Error(err);
+  }
+};
+
+exports.verifyEmail = async (email) => {
+  try {
+    await mongoose.connect(DB_URL, connectOptions);
+
+    let res = await User.findOneAndUpdate(
+      email,
+      {
+        isVerify: true,
+      },
+      { new: true }
+    );
+
     mongoose.disconnect();
     return res;
   } catch (err) {

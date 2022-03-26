@@ -1,8 +1,9 @@
 const bcrypt = require("bcrypt");
-const { userValidation, passwordValidation } = require("../utils/validation");
-const generateAccessToken = require("../utils/token");
+const mailer = require("../utils/mailer");
+const otpModel = require("../models/otp.model");
 const userModel = require("../models/user.model");
-const tokenModel = require("../models/token.model");
+const generateAccessToken = require("../utils/token");
+const { userValidation, passwordValidation } = require("../utils/validation");
 
 exports.getUser = async (req, res) => {
   try {
@@ -112,6 +113,13 @@ exports.login = async (req, res) => {
         data: null,
       });
 
+    if (!user.isVerify)
+      return res.status(200).send({
+        status: false,
+        message: "Your email is not verified",
+        data: null,
+      });
+
     // Check if password is correct
     let compareResult = await bcrypt.compare(password, user.password);
     if (!compareResult)
@@ -123,9 +131,6 @@ exports.login = async (req, res) => {
 
     // Create and assign a token
     let accessToken = generateAccessToken({ _id: user._id });
-
-    // Save access token to database
-    await tokenModel.createNewToken(accessToken);
 
     res.header("Authorization", accessToken).json({
       status: true,
@@ -146,47 +151,9 @@ exports.login = async (req, res) => {
       message: "Faild to login",
       data: null,
     });
+    console.log(err);
   }
 };
-
-// exports.logout = async (req, res) => {
-//   try {
-//     const { token } = req.body;
-//     if (!token) return res.status(200).send("token is required");
-
-//     // Check token in database
-//     let result = await tokenModel.checkToken(token);
-//     if (result.length === 0) return res.status(200).send("Invalid token");
-
-//     // Delete token from database
-//     await tokenModel.deleteToken(token);
-
-//     res.status(204).send("Successfully logout");
-//   } catch (err) {
-//     res.status(200).send("Failed to logout");
-//     console.log(err);
-//   }
-// };
-
-// exports.refreshToken = async (req, res) => {
-//   const refreshToken = req.body.token;
-//   try {
-//     if (!refreshToken) return res.status(200).send("token is required");
-
-//     // Check token in database
-//     let token = await tokenModel.checkToken(refreshToken);
-//     if (token.length === 0) return res.status(200).send("Invalid token");
-
-//     jwt.verify(refreshToken, JWT_TOKEN_SECRET, (err, user) => {
-//       if (err) return res.status(200).send("Invalid token");
-//       const accessToken = generateAccessToken({ _id: user._id });
-//       res.status(200).send({ accessToken: accessToken });
-//     });
-//   } catch (err) {
-//     res.status(200).send("Failed to refresh token");
-//     console.log(err);
-//   }
-// };
 
 exports.updateUser = async (req, res) => {
   try {
@@ -254,6 +221,15 @@ exports.changePassword = async (req, res) => {
     let { id } = req.params;
     let { oldPassword, newPassword } = req.body;
 
+    // Check passwords
+    if (oldPassword === newPassword) {
+      return res.status(200).send({
+        status: false,
+        message: "Old and new password are the same",
+        data: null,
+      });
+    }
+
     // Check user id
     let checkResult = await userModel.checkId(id);
     typeof checkResult === "string"
@@ -265,6 +241,7 @@ exports.changePassword = async (req, res) => {
       : (user = checkResult);
 
     if (req.user._id === id) {
+      // Validate password
       let validationResult = passwordValidation(req.body);
       if (validationResult)
         return res.status(200).send({
@@ -281,6 +258,8 @@ exports.changePassword = async (req, res) => {
           message: "Old password not correct",
           data: null,
         });
+
+      // Change password
       await userModel.changePassword(id, newPassword);
       res.status(200).send({
         status: true,
@@ -299,5 +278,107 @@ exports.changePassword = async (req, res) => {
       message: "Failed to change password",
       data: null,
     });
+  }
+};
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp)
+      return res.status(200).send({
+        status: false,
+        message: "Email and otp is required",
+        data: null,
+      });
+
+    let validationResult = userValidation(req.body);
+    if (validationResult)
+      return res.status(200).send({
+        status: false,
+        message: validationResult.details[0].message,
+        data: null,
+      });
+
+    const user = await userModel.getUserByEmail(email);
+    if (!user)
+      return res.status(200).send({
+        status: false,
+        message: "Email is not registered",
+        data: null,
+      });
+
+    if (user.isVerify)
+      return res.status(200).send({
+        status: false,
+        message: "Email is already verified",
+        data: null,
+      });
+
+    let checkOtp = await otpModel.checkOtp(email, otp);
+    if (!checkOtp)
+      return res.status(200).send({
+        status: false,
+        message: `${otp} is invalid`,
+        data: null,
+      });
+
+    let result = await userModel.verifyEmail(email);
+    let { password, ...data } = result._doc;
+    res.status(200).send({
+      status: true,
+      message: "Email verify success",
+      data,
+    });
+  } catch (err) {
+    res.status(200).send({
+      status: false,
+      message: "Failed to verify email",
+      data: null,
+    });
+  }
+};
+
+exports.sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return res.status(200).send({
+        status: false,
+        message: "Email is required",
+        data: null,
+      });
+
+    let validationResult = userValidation({ email });
+    if (validationResult)
+      return res.status(200).send({
+        status: false,
+        message: validationResult.details[0].message,
+        data: null,
+      });
+
+    const user = await userModel.getUserByEmail(email);
+    if (!user) {
+      return res.status(200).send({
+        status: false,
+        message: "Email is not registered",
+        data: null,
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    await otpModel.createNewOtp(otp, email);
+    await mailer(otp, email);
+    res.status(200).send({
+      status: true,
+      message: "Code sent, Please check your email",
+      data: null,
+    });
+  } catch (err) {
+    res.status(200).send({
+      status: false,
+      message: "Failed to send otp",
+      data: null,
+    });
+    console.log(err);
   }
 };

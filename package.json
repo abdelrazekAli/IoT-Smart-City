@@ -14,10 +14,12 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "googleapis": "^99.0.0",
     "joi": "^17.4.2",
     "joi-password": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.6"
+    "mongoose": "^6.0.6",
+    "nodemailer": "^6.7.3"
   },
   "engines": {
     "node": "14.15.4",
