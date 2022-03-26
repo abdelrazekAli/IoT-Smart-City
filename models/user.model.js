@@ -149,7 +149,7 @@ exports.verifyEmail = async (email) => {
     await mongoose.connect(DB_URL, connectOptions);
 
     let res = await User.findOneAndUpdate(
-      email,
+      { email },
       {
         isVerify: true,
       },

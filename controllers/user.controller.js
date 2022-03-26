@@ -287,7 +287,7 @@ exports.verifyEmail = async (req, res) => {
     if (!email || !otp)
       return res.status(200).send({
         status: false,
-        message: "Email and otp is required",
+        message: "Email and otp are required",
         data: null,
       });
 
@@ -323,6 +323,7 @@ exports.verifyEmail = async (req, res) => {
       });
 
     let result = await userModel.verifyEmail(email);
+    await otpModel.deleteOtp(email);
     let { password, isVerify, ...data } = result._doc;
     res.status(200).send({
       status: true,
