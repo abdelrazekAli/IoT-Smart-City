@@ -12,6 +12,7 @@ const userSchema = mongoose.Schema(
     phone: String,
     carInt: String,
     carStr: String,
+    resetPasswordToken: String,
     isVerify: {
       type: Boolean,
       default: false,
@@ -174,10 +175,27 @@ exports.resetPassword = async (email, password) => {
       { email: email },
       {
         password: hashedPassword,
-      },
-      { new: true }
+        $unset: { resetPasswordToken: "" },
+      }
     );
 
+    mongoose.disconnect();
+  } catch (err) {
+    mongoose.disconnect();
+    throw new Error(err);
+  }
+};
+
+exports.passToken = async (email, token) => {
+  try {
+    await mongoose.connect(DB_URL, connectOptions);
+
+    await User.findOneAndUpdate(
+      { email: email },
+      {
+        resetPasswordToken: token,
+      }
+    );
     mongoose.disconnect();
   } catch (err) {
     mongoose.disconnect();
