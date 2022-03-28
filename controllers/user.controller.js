@@ -383,3 +383,60 @@ exports.sendOtp = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, password } = req.body;
+    if (!email || !otp || !password)
+      return res.status(200).send({
+        status: false,
+        message: "Email, password and otp are required",
+        data: null,
+      });
+
+    let validationResult = userValidation(req.body);
+    if (validationResult)
+      return res.status(200).send({
+        status: false,
+        message: validationResult.details[0].message,
+        data: null,
+      });
+
+    const user = await userModel.getUserByEmail(email);
+    if (!user)
+      return res.status(200).send({
+        status: false,
+        message: "Email is not registered",
+        data: null,
+      });
+
+    if (!user.isVerify)
+      return res.status(200).send({
+        status: false,
+        message: "Email is not verified",
+        data: null,
+      });
+
+    let checkOtp = await otpModel.checkOtp(email, otp);
+    if (!checkOtp)
+      return res.status(200).send({
+        status: false,
+        message: `${otp} is invalid`,
+        data: null,
+      });
+
+    await userModel.resetPassword(email, password);
+    await otpModel.deleteOtp(email);
+    res.status(200).send({
+      status: true,
+      message: "reset password success",
+      data: null,
+    });
+  } catch (err) {
+    res.status(200).send({
+      status: false,
+      message: "Failed to reset password",
+      data: null,
+    });
+  }
+};
