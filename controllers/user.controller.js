@@ -1,8 +1,13 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const mailer = require("../utils/mailer");
 const otpModel = require("../models/otp.model");
 const userModel = require("../models/user.model");
-const generateAccessToken = require("../utils/token");
+const {
+  generateAccessToken,
+  generatePassResetToken,
+} = require("../utils/token");
+const { catchExpireError } = require("../utils/token");
 const { userValidation, passwordValidation } = require("../utils/validation");
 
 exports.getUser = async (req, res) => {
@@ -221,15 +226,6 @@ exports.changePassword = async (req, res) => {
     let { id } = req.params;
     let { oldPassword, newPassword } = req.body;
 
-    // Check passwords
-    if (oldPassword === newPassword) {
-      return res.status(200).send({
-        status: false,
-        message: "Old and new password are the same",
-        data: null,
-      });
-    }
-
     // Check user id
     let checkResult = await userModel.checkId(id);
     typeof checkResult === "string"
@@ -249,6 +245,15 @@ exports.changePassword = async (req, res) => {
           message: validationResult.details[0].message,
           data: null,
         });
+
+      // Check passwords
+      if (oldPassword === newPassword) {
+        return res.status(200).send({
+          status: false,
+          message: "Old and new password are the same",
+          data: null,
+        });
+      }
 
       // Check user old passowrd
       let compareResult = await bcrypt.compare(oldPassword, user.password);
@@ -318,7 +323,7 @@ exports.verifyEmail = async (req, res) => {
     if (!checkOtp)
       return res.status(200).send({
         status: false,
-        message: `${otp} is invalid`,
+        message: `Otp: ${otp} is invalid`,
         data: null,
       });
 
@@ -384,13 +389,13 @@ exports.sendOtp = async (req, res) => {
   }
 };
 
-exports.resetPassword = async (req, res) => {
+exports.verifyOtp = async (req, res) => {
   try {
-    const { email, otp, password } = req.body;
-    if (!email || !otp || !password)
+    const { email, otp } = req.body;
+    if (!email || !otp)
       return res.status(200).send({
         status: false,
-        message: "Email, password and otp are required",
+        message: "Email and otp are required",
         data: null,
       });
 
@@ -421,12 +426,81 @@ exports.resetPassword = async (req, res) => {
     if (!checkOtp)
       return res.status(200).send({
         status: false,
-        message: `${otp} is invalid`,
+        message: `Otp: ${otp} is invalid`,
+        data: null,
+      });
+    // Create password token
+    const passToken = generatePassResetToken();
+
+    // Store password token
+    await userModel.passToken(email, passToken);
+
+    // Delete otp
+    await otpModel.deleteOtp(email);
+    res.status(200).send({
+      status: true,
+      message: "Otp is correct",
+      data: null,
+    });
+  } catch (err) {
+    res.status(200).send({
+      status: false,
+      message: "Failed to verify email",
+      data: null,
+    });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(200).send({
+        status: false,
+        message: "Email and password are required",
         data: null,
       });
 
+    let validationResult = userValidation(req.body);
+    if (validationResult)
+      return res.status(200).send({
+        status: false,
+        message: validationResult.details[0].message,
+        data: null,
+      });
+
+    const user = await userModel.getUserByEmail(email);
+    if (!user)
+      return res.status(200).send({
+        status: false,
+        message: "Email is not registered",
+        data: null,
+      });
+
+    if (!user.isVerify)
+      return res.status(200).send({
+        status: false,
+        message: "Email is not verified",
+        data: null,
+      });
+
+    if (!user.resetPasswordToken)
+      return res.status(200).send({
+        status: false,
+        message: "You should verify otp first",
+        data: null,
+      });
+
+    // Check passsword token
+    jwt.verify(
+      user.resetPasswordToken,
+      process.env.JWT_TOKEN_SECRET,
+      (err, decode) => {
+        if (err) return catchExpireError(err, res);
+      }
+    );
     await userModel.resetPassword(email, password);
-    await otpModel.deleteOtp(email);
+
     res.status(200).send({
       status: true,
       message: "reset password success",
@@ -438,5 +512,6 @@ exports.resetPassword = async (req, res) => {
       message: "Failed to reset password",
       data: null,
     });
+    console.log(err);
   }
 };
