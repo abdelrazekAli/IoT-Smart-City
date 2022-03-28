@@ -28,7 +28,7 @@ const mailer = async (otp, mailTo) => {
     html: `
     <h1 style="text-align: center;">Iot Smart City</h1>
     <div style="font-size: 18px;">
-        <span style="margin-left:20%">Account verification code:</span> <b style="color: green;">${otp}</b>
+        <span style="margin-left:20%">Kindly use this code:</span> <b style="color: green;">${otp}</b>
     </div>
     <p style="margin: 1% 20%;">Thanks, <br>
         Smart City Team</p>`,

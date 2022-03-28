@@ -10,6 +10,7 @@ const {
   updateUser,
   verifyEmail,
   changePassword,
+  resetPassword,
 } = require("../controllers/user.controller");
 
 router.get("/:id", getUser);
@@ -18,6 +19,7 @@ router.post("/register", createNewUser);
 router.post("/send-otp", sendOtp);
 router.post("/verify-email", verifyEmail);
 router.put("/:id", auth, updateUser);
+router.post("/password-reset", resetPassword);
 router.put("/password-change/:id", auth, changePassword);
 
 module.exports = router;

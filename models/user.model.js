@@ -126,7 +126,7 @@ exports.changePassword = async (id, password) => {
   try {
     await mongoose.connect(DB_URL, connectOptions);
 
-    //Encrypt user password
+    //Encrypt password
     let hashedPassword = await bcrypt.hash(password, 10);
 
     let res = await User.findByIdAndUpdate(
@@ -158,6 +158,27 @@ exports.verifyEmail = async (email) => {
 
     mongoose.disconnect();
     return res;
+  } catch (err) {
+    mongoose.disconnect();
+    throw new Error(err);
+  }
+};
+
+exports.resetPassword = async (email, password) => {
+  try {
+    await mongoose.connect(DB_URL, connectOptions);
+
+    //Encrypt user password
+    let hashedPassword = await bcrypt.hash(password, 10);
+    await User.findOneAndUpdate(
+      { email: email },
+      {
+        password: hashedPassword,
+      },
+      { new: true }
+    );
+
+    mongoose.disconnect();
   } catch (err) {
     mongoose.disconnect();
     throw new Error(err);
