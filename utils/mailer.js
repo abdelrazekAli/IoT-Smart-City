@@ -33,14 +33,7 @@ const mailer = async (otp, mailTo) => {
     <p style="margin: 1% 20%;">Thanks, <br>
         Smart City Team</p>`,
   };
-
-  transporter.sendMail(mailOptions, (err, data) => {
-    if (err) {
-      return console.log("Error : ", err);
-    } else {
-      return console.log("Email sent ...");
-    }
-  });
+  await transporter.sendMail(mailOptions);
 };
 
 module.exports = mailer;
