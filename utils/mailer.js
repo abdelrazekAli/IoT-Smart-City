@@ -33,6 +33,7 @@ const mailer = async (otp, mailTo) => {
     <p style="margin: 1% 20%;">Thanks, <br>
         Smart City Team</p>`,
   };
+
   await transporter.sendMail(mailOptions);
 };
 
