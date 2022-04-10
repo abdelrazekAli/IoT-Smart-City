@@ -7,14 +7,12 @@ class DioHelper {
   static init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://smart-city-9.herokuapp.com/api/users/',
+        baseUrl: 'https://smart-city-9.herokuapp.com/api/',
         receiveDataWhenStatusError: true,
-        // headers: {
-        //     'Content--Type': 'application/json',
-        //   }),
       ),
     );
   }
+
 
   static Future<Response> getData({
     @required String url,
@@ -25,6 +23,7 @@ class DioHelper {
     return await dio.get(
       url,
       queryParameters: query,
+
     );
   }
 
@@ -41,10 +40,11 @@ class DioHelper {
 
     };
 
-    return  dio.post(
+    return   dio.post(
       url,
       queryParameters:query,
       data: data,
+
     );
   }
 
@@ -67,4 +67,5 @@ class DioHelper {
       data: data,
     );
   }
+
 }

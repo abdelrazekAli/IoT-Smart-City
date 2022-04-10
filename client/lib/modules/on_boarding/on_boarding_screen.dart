@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_city/modules/login/parking_login_screen.dart';
-import 'package:smart_city/shared/componants/componants.dart';
+import 'package:smart_city/shared/components/components.dart';
 import 'package:smart_city/shared/network/cache_helper.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 

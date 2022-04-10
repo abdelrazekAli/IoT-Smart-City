@@ -1,15 +1,17 @@
 import 'dart:ui';
 import 'package:conditional_builder/conditional_builder.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_city/layout/cubit/cubit.dart';
 import 'package:smart_city/layout/cubit/state.dart';
-import 'package:smart_city/shared/componants/componants.dart';
-import 'package:smart_city/shared/componants/constants.dart';
+import 'package:smart_city/shared/components/components.dart';
+import 'package:smart_city/shared/components/constants.dart';
 import 'package:smart_city/shared/style/icon_broken.dart';
 
 class EditProfileScreen extends StatelessWidget {
+
   var formKey = GlobalKey<FormState>();
   var nameController = TextEditingController();
   var emailController = TextEditingController();
@@ -92,7 +94,7 @@ class EditProfileScreen extends StatelessWidget {
                                 if (state is ParkingLoadingUpdateState)
 
                                   LinearProgressIndicator(color: Colors.blueAccent,),
-                                SizedBox(height: 30,),
+                                SizedBox(height: 20,),
                                 Stack(
                                   alignment: AlignmentDirectional.bottomEnd,
                                   children: [
@@ -143,12 +145,16 @@ class EditProfileScreen extends StatelessWidget {
                                 defaultFormField(
                                   controller: emailController,
                                   type: TextInputType.emailAddress,
-                                  validate: (String value) {
-                                    if (value.isEmpty) {
-                                      return 'email must not be empty';
-                                    }
-                                    return null;
-                                  },
+                                  validate: (email) {
+                                    if(email.isEmpty){
+                                      return 'Please Enter Your Email Address';
+                                    }else if(!EmailValidator.validate(email))
+                                    {
+                                      return 'Enter a valid email';
+                                    }else
+                                      return null;
+                                  }
+                                  ,
                                   label: 'Email Address',
                                   prefix: Icons.email,
                                 ),
@@ -160,9 +166,10 @@ class EditProfileScreen extends StatelessWidget {
                                   type: TextInputType.phone,
                                   validate: (String value) {
                                     if (value.isEmpty) {
-                                      return 'phone must not be empty';
+                                      return 'Please Enter Your Phone Number';
+                                    }if(value.length <9){
+                                      return 'Please Enter a Valid Phone Number';
                                     }
-                                    return null;
                                   },
                                   label: 'Phone',
                                   prefix: Icons.phone,
@@ -212,11 +219,11 @@ class EditProfileScreen extends StatelessWidget {
 
 
                                         child: defaultFormField(
-                                          format: [LengthLimitingTextInputFormatter(3)],
+                                          format: [LengthLimitingTextInputFormatter(4)],
                                           context: context,
                                           validate: (String value) {
                                             if (value.isEmpty) {
-                                              return 'enter your car id if exist';
+                                              return 'enter your car num if exist';
                                             }
                                           },
                                           controller: carIntController,
@@ -224,7 +231,7 @@ class EditProfileScreen extends StatelessWidget {
                                           prefix: Icons.directions_car_rounded,
 
 
-                                          label: 'CAR ID ',
+                                          label: 'CAR Num',
                                         ),
 
                                       ),
@@ -234,21 +241,7 @@ class EditProfileScreen extends StatelessWidget {
                                 SizedBox(
                                   height: 20,
                                 ),
-                               /* defaultButton(
-                                  function: () {
-                                    if (formKey.currentState.validate()) {
-                                      ParkingCubit.get(context).updateUserData(
-                                          username: nameController.text,
-                                          phone: phoneController.text,
-                                          email: emailController.text,
-                                          carStr: carStrController.text,
-                                          carInt: carIntController.text
 
-                                      );
-                                    }
-                                  },
-                                  text: 'Update',
-                                ),*/
 
 
                               ],

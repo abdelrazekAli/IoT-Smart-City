@@ -1,5 +1,3 @@
-
-
 import 'package:smart_city/models/login_model.dart';
 
 abstract class ParkingRegisterStates{}
@@ -23,3 +21,22 @@ class ParkingRegisterErrorState extends ParkingRegisterStates
   ParkingRegisterErrorState(this.error);
 }
 class ParkingChangePasswordVState extends ParkingRegisterStates {}
+class ParkingChangePasswordV2State extends ParkingRegisterStates {}
+
+class ParkingSendOTPLoadingState extends ParkingRegisterStates {}
+
+class ParkingSendOTPSuccessState extends ParkingRegisterStates
+{
+  final ParkingLoginModel loginModel;
+
+  ParkingSendOTPSuccessState(this.loginModel);
+
+}
+
+class ParkingSendOTPErrorState extends ParkingRegisterStates
+{
+  final String error;
+
+  ParkingSendOTPErrorState(this.error);
+}
+

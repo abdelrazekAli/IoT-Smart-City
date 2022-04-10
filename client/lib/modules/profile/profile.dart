@@ -4,9 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_city/layout/cubit/cubit.dart';
 import 'package:smart_city/layout/cubit/state.dart';
-import 'package:smart_city/shared/componants/componants.dart';
-import 'package:smart_city/shared/componants/constants.dart';
-import 'package:smart_city/shared/style/icon_broken.dart';
+import 'package:smart_city/shared/components/components.dart';
+import 'package:restart_app/restart_app.dart';
 
 import 'edit_profile_screen.dart';
 
@@ -43,16 +42,16 @@ class ProfileScreen extends StatelessWidget {
                   elevation: 10,
                   actions: [
                     IconButton(
-                        onPressed: ()
-                        {
-                          navigateTo(
-                              context,
-                              EditProfileScreen()
-                          );
-                        },
-                        icon: Icon(Icons.edit_outlined,
+                      onPressed: ()
+                      {
+                        navigateTo(
+                            context,
+                            EditProfileScreen()
+                        );
+                      },
+                      icon: Icon(Icons.edit_outlined,
                         color: Colors.blue,
-                        ),
+                      ),
 
                     ),
                   ],
@@ -69,17 +68,17 @@ class ProfileScreen extends StatelessWidget {
 
                             backgroundColor: Colors.deepPurpleAccent,
                             child: CircleAvatar(
-                              radius: 64,
-                              backgroundImage: AssetImage('assets/images/onboard_1.jpg')
+                                radius: 64,
+                                backgroundImage: AssetImage('assets/images/onboard_1.jpg')
                             ),
                           ),
                           SizedBox(height: 15,),
                           Text(nameController.text,
                             style: TextStyle(
-                            fontSize: 20,
+                              fontSize: 20,
                               fontWeight: FontWeight.w600,
 
-                          ),
+                            ),
                           ),
                         ],
                       ),
@@ -127,7 +126,6 @@ class ProfileScreen extends StatelessWidget {
 
                                         child: defaultFormField(
                                           isClickable: false,
-                                          format: [LengthLimitingTextInputFormatter(4)],
                                           context: context,
 
                                           controller:carStrController,
@@ -152,7 +150,6 @@ class ProfileScreen extends StatelessWidget {
 
                                         child: defaultFormField(
                                           isClickable: false,
-                                          format: [LengthLimitingTextInputFormatter(4)],
                                           context: context,
                                           controller: carIntController,
                                           prefix: Icons.directions_car_rounded,
