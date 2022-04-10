@@ -1,25 +1,79 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:smart_city/layout/cubit/cubit.dart';
 import 'package:smart_city/layout/cubit/state.dart';
-import 'package:smart_city/models/login_model.dart';
-import 'package:smart_city/modules/login/cubit/login_cubit.dart';
-import 'package:smart_city/modules/login/parking_login_screen.dart';
-import 'package:smart_city/modules/profile/edit_profile_screen.dart';
+import 'package:smart_city/main.dart';
 import 'package:smart_city/modules/profile/profile.dart';
 import 'package:smart_city/modules/setting/settings_screen.dart';
-import 'package:smart_city/shared/componants/componants.dart';
-import 'package:smart_city/shared/componants/constants.dart';
-import 'package:smart_city/shared/cubit/cubit.dart';
-import 'package:smart_city/shared/network/cache_helper.dart';
-import 'package:smart_city/shared/style/theme.dart';
+import 'package:smart_city/shared/components/components.dart';
+import 'package:smart_city/shared/components/constants.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
-class LayoutScreen extends StatelessWidget {
+class LayoutScreen extends StatefulWidget {
+  @override
+  _LayoutScreenState createState() => _LayoutScreenState();
+}
+
+class _LayoutScreenState extends State<LayoutScreen> {
   Color color = ThemeMode.light != null ? HexColor('333739') : Colors.white;
 
+  bool _hasInternet =false;
+
+  ConnectivityResult result = ConnectivityResult.none;
+
+  RefreshController _refreshController = RefreshController();
+
   var emailController = TextEditingController();
+
   var nameController = TextEditingController();
+
+
+  void status = showToast(
+      text: 'Connecting...',
+      state: ToastStates.SUCCESS);
+  Connectivity  _connectivity =Connectivity();
+
+
+  @override
+  void initState() {
+    checkRealtimeConnection();
+    super.initState(
+
+    );
+  }
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
+  }
+StreamSubscription _streamSubscription;
+
+  void checkRealtimeConnection()async{
+    _streamSubscription = _connectivity.onConnectivityChanged.listen((event) {
+      if(event ==ConnectivityResult.mobile){
+        status = showToast(
+            text: 'Connection Success',
+            state: ToastStates.SUCCESS);
+      }else if(event ==ConnectivityResult.wifi){
+        status = showToast(
+            text: 'Connection Success',
+            state: ToastStates.SUCCESS);
+      }else{
+        status=showToast(
+            text: 'Not Connected',
+            state: ToastStates.SUCCESS);;
+      }
+      setState((){});
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,86 +87,141 @@ class LayoutScreen extends StatelessWidget {
       var cubit = ParkingCubit.get(context);
       return Scaffold(
         appBar: AppBar(
-
-
           title: Text('Smart City'),
+
           elevation: 10,
         ),
-        body: cubit.bottomScreen[cubit.currentIndex],
+        body: SmartRefresher(
+        child: cubit.bottomScreen[cubit.currentIndex],
+
+        onRefresh:() async {
+          await Future.delayed(Duration(microseconds: 500));
+          _refreshController.refreshFailed();
+          //Restart.restartApp();
+
+          _hasInternet=await InternetConnectionChecker().hasConnection ;
+          final color = _hasInternet ? Colors.green :Colors.red;
+          final text = _hasInternet ? 'Network Connection Success': 'Network Connection Failed';
+          result= await Connectivity().checkConnectivity();
+
+            if(_hasInternet){
+              ParkingCubit.get(context).getUserData();
+              showToast(
+                  text: text,
+                  state: ToastStates.SUCCESS
+              );
+            }
+            else {
+              showToast(
+                  text: text,
+                  state: ToastStates.ERROR
+              );
+
+            }
+        },
+        onLoading:() async {
+          await Future.delayed(Duration(microseconds: 500));
+          _refreshController.refreshFailed();
+        },
+        enablePullUp: true,
+        controller: _refreshController,
+      ),
         drawer: Container(
           color: Colors.white,
           child: Drawer(
             child: ListView(
               children: [
                 DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey
-                  ),
-                  child: InkWell(
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-
-                          radius: 31,
-                          backgroundColor: Colors.deepPurpleAccent,
-                          child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage('assets/images/onboard_1.jpg')),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Container(
-
-                          width: 200,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(nameController.text,
-                                  style: TextStyle(
-                                    fontSize: 20, color: Colors.black, fontFamily: '',)),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(emailController.text,
-                                style: TextStyle(
-                                  fontSize: 14, color: Colors.black, fontFamily: '',),),
-                            ],
+                    decoration: BoxDecoration(color: Colors.blueGrey),
+                    child: InkWell(
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 31,
+                            backgroundColor: Colors.deepPurpleAccent,
+                            child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    AssetImage('assets/images/onboard_1.jpg')),
                           ),
-                        ),
-                      ],
-                    ),
-                    onTap: (){
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            width: 200,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    nameController.text,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontFamily: '',
+                                    )),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  emailController.text,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontFamily: '',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () async{
+                        _hasInternet=await InternetConnectionChecker().hasConnection ;
+
+                          if (_hasInternet) {
+                            navigateTo(
+                              context,
+                              ProfileScreen(),
+                            );
+                          }
+
+                        else{
+                          showToast(
+                              text: 'Please Check Your Network Connection', state: ToastStates.ERROR
+                          );
+                        }
+                      },
+                    )),
+
+                //   myDivider(),
+                SizedBox(
+                  height: 30,
+                ),
+                buildListTile("Main Screen", Icons.home_outlined, () {}),
+                SizedBox(
+                  height: 15,
+                ),
+                buildListTile("Profile", Icons.account_box_outlined, () async{
+                  _hasInternet=await InternetConnectionChecker().hasConnection ;
+
+                    if (_hasInternet) {
                       navigateTo(
                         context,
                         ProfileScreen(),
                       );
-                    },
-                  )
-                ),
 
-            //   myDivider(),
-                SizedBox(
-                  height: 30,
-                ),
-                buildListTile(
-                     "Main Screen", Icons.home_outlined, () {}),
-                SizedBox(
-                  height: 15,
-                ),
-                buildListTile(
-                     "Profile", Icons.account_box_outlined, () {
-                  navigateTo(
-                    context,
-                    ProfileScreen(),
-                  );
+                  }
+                  else{
+                    showToast(
+                        text: 'Please Check Your Network Connection', state: ToastStates.ERROR
+                    );
+                  }
                 }),
                 SizedBox(
                   height: 15,
                 ),
-                buildListTile(
-                     "Settings", Icons.settings_outlined, () {
+                buildListTile("Settings", Icons.settings_outlined, () {
                   navigateTo(context, SettingsScreen());
                 }),
                 SizedBox(
@@ -122,8 +231,7 @@ class LayoutScreen extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                buildListTile( "Log out", Icons.logout_outlined,
-                    () {
+                buildListTile("Log out", Icons.logout_outlined, () {
                   signOut(context);
                 }),
                 SizedBox(
@@ -147,63 +255,9 @@ class LayoutScreen extends StatelessWidget {
               icon: Icon(Icons.home_outlined),
               label: 'Home',
             ),
-
           ],
         ),
       );
     });
   }
 }
-
-/*showMyAlertDialog(BuildContext context) {
-  var emailController = TextEditingController();
-  var model = ParkingCubit.get(context).userModel;
-
-  emailController.text = model.data.email;
-  SimpleDialog dialog = SimpleDialog(
-    backgroundColor: Colors.grey[100],
-    title: Row(
-      children: [
-        Text(
-          "Accounts",
-        ),
-        Spacer(),
-        IconButton(
-          onPressed: () {
-            addAcount(context);
-          },
-          icon: Icon(Icons.add),
-        )
-      ],
-    ),
-    children: <Widget>[
-      SimpleDialogOption(
-          onPressed: () {},
-          child: Text(emailController.text,
-              style: TextStyle(fontWeight: FontWeight.bold))),
-    ],
-  );
-
-  Future futureValue = showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return dialog;
-      });
-}*/
-/*ElevatedButton(
-
-                              style: ElevatedButton.styleFrom(
-                                  onPrimary: Colors.black, ),
-                              child: Row(
-                                children: [
-                                  Text(emailController.text,style: TextStyle(fontWeight: FontWeight.bold),),
-                                  Spacer(),
-                                  IconButton(
-                                      onPressed: (){showMyAlertDialog(context);}, icon: Icon(Icons.keyboard_arrow_down))
-                                ],
-                              ),
-                              onPressed: () {
-                                showMyAlertDialog(context);
-                              },
-                            ),*/
-

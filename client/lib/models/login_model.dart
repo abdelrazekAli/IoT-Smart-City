@@ -1,4 +1,6 @@
 
+import 'package:flutter/cupertino.dart';
+
 class ParkingLoginModel
 {
   bool status;
@@ -28,6 +30,7 @@ class UserData
 
 
 
+
   UserData.fromJson(Map<String,dynamic> json)
   {
 
@@ -39,6 +42,7 @@ class UserData
     token =json['token'];
     carStr=json['carStr'];
     carInt=json['carInt'];
+
 
 
 

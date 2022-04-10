@@ -9,9 +9,10 @@ class ParkingRegisterCubit extends Cubit<ParkingRegisterStates>
 {
   ParkingRegisterCubit(): super(ParkingRegisterInitialState());
 
-  static  ParkingRegisterCubit get(context) => BlocProvider.of(context );
+  static  ParkingRegisterCubit get(context) => BlocProvider.of(context);
 
   ParkingLoginModel loginModel;
+
 
   void userRegister({
   @required String email,
@@ -53,4 +54,40 @@ class ParkingRegisterCubit extends Cubit<ParkingRegisterStates>
     suffix =isPassword? Icons.visibility_outlined:Icons.visibility_off_outlined;
     emit(ParkingChangePasswordVState());
   }
+  IconData suffx = Icons.visibility_outlined;
+  bool inPassword =true;
+
+  void changePasswordVisibility2()
+  {
+    inPassword= !inPassword;
+    suffx =inPassword? Icons.visibility_outlined:Icons.visibility_off_outlined;
+    emit(ParkingChangePasswordV2State());
+  }
+  void sendOTP({
+    @required String email,
+
+  }) {
+    emit(ParkingSendOTPLoadingState());
+    DioHelper.postData(
+      url: SendOTP,
+      data: {
+        'email': email,
+      },
+    ).then((value) {
+      print(value.data);
+      loginModel = ParkingLoginModel.fromJson(value.data);
+
+
+
+
+
+      emit(ParkingSendOTPSuccessState(loginModel));
+    }).catchError((error) {
+      print(error.toString());
+      emit(ParkingSendOTPErrorState(error.toString()));
+    });}
+
+
+
+
 }

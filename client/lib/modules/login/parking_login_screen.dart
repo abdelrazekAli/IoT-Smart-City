@@ -1,37 +1,53 @@
 import 'dart:ui';
-
 import 'package:conditional_builder/conditional_builder.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:smart_city/layout/layout_screen.dart';
-import 'package:smart_city/main.dart';
-import 'package:smart_city/models/login_model.dart';
 import 'package:smart_city/modules/login/cubit/login_cubit.dart';
 import 'package:smart_city/modules/login/cubit/login_states.dart';
+import 'package:smart_city/modules/password/forget_password.dart';
 import 'package:smart_city/modules/register/register_screen.dart';
-import 'package:smart_city/shared/componants/componants.dart';
-import 'package:smart_city/shared/componants/constants.dart';
+import 'package:smart_city/shared/components/components.dart';
+import 'package:smart_city/shared/components/constants.dart';
 import 'package:smart_city/shared/network/cache_helper.dart';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 
 
 
 
-class ParkingLoginScreen extends StatelessWidget {
-
-  var formKey = GlobalKey<FormState>();
-
-
+class ParkingLoginScreen extends StatefulWidget {
 
 
 
 
   @override
+  _ParkingLoginScreenState createState() => _ParkingLoginScreenState();
+}
+
+class _ParkingLoginScreenState extends State<ParkingLoginScreen> {
+  var formKey = GlobalKey<FormState>();
+
+  @override
   Widget build(BuildContext context) {
+    bool _hasInternet =false;
+    final color = _hasInternet ? Colors.green :Colors.red;
+    final text = _hasInternet ? 'Internet': 'No Internet';
     var emailController = TextEditingController();
+    var nameController = TextEditingController();
+    var carIntController = TextEditingController();
+    var carStrController = TextEditingController();
+    var phoneController = TextEditingController();;
+
+
+
+    @override
+    void dispose(){
+      emailController.dispose();
+
+    }
+
     var passwordController = TextEditingController();
 
     return BlocProvider(
@@ -46,6 +62,11 @@ class ParkingLoginScreen extends StatelessWidget {
             {
               print(state.loginModel.message);
               print(state.loginModel.data.token);
+              print(state.loginModel.data.username);
+              print(state.loginModel.data.uid);
+              print(state.loginModel.data.carInt);
+              print(state.loginModel.data.carStr);
+              print(state.loginModel.data.phone);
               CacheHelper.saveData(
                 key: 'token',
                 value: state.loginModel.data.token,
@@ -121,26 +142,23 @@ class ParkingLoginScreen extends StatelessWidget {
                              ),
                            ),
                            SizedBox(height: 20,),
-                         /*  Hero(
-                             tag: 'TextTag',
-                             child: Text('Enter Your Data To Continue',
-                                 style:TextStyle(
-                                   color: Colors.white,
-                                   fontSize: 12,
-                                   fontWeight: FontWeight.w700,
-                                   fontStyle: FontStyle.italic,
-                                 )),
-                           ),*/
+
                            SizedBox(
                              height: 30,
                            ),
                            defaultFormField(
                              controller: emailController,
                              type: TextInputType.emailAddress,
-                             validate: (String value) {
-                               if (value.isEmpty) {
+                             autofill: [AutofillHints.email],
+
+                             validate: (email) {
+                               if(email.isEmpty){
                                  return 'Please Enter Your Email Address';
-                               }
+                               }else if(!EmailValidator.validate(email))
+                               {
+                                 return 'Enter a valid email';
+                               }else
+                                 return null;
                              },
                              label: 'Email Address',
                              prefix: Icons.email_outlined,
@@ -186,21 +204,25 @@ class ParkingLoginScreen extends StatelessWidget {
                              condition:state is! ParkingLoginLoadingState ,
                              builder: (context)=> defaultButton(
 
-                               function: ()
+                               function: ()async
                                {
+                                 _hasInternet=await InternetConnectionChecker().hasConnection ;
 
+                                if(_hasInternet){
 
+                                  if(formKey.currentState.validate())
+                                  {
+                                    ParkingLoginCubit.get(context).userLogin(
+                                      email: emailController.text,
+                                      password: passwordController.text,
+                                    );
 
-                                 if(formKey.currentState.validate())
-                                 {
-                                   ParkingLoginCubit.get(context).userLogin(
-                                     email: emailController.text,
-                                     password: passwordController.text,
-
-                                   );
-
-
-                                 }
+                                  }
+                                }else
+                                  showToast(
+                                      text: 'Please Check Your Network Connection',
+                                      state: ToastStates.SUCCESS
+                                  );
 
 
                                },
@@ -211,26 +233,55 @@ class ParkingLoginScreen extends StatelessWidget {
                              fallback: (context)=> Center(child: CircularProgressIndicator()),
                            ),
                            SizedBox(
-                             height: 15,
+                             height: 5,
                            ),
-                           Row(
-                             mainAxisAlignment: MainAxisAlignment.center,
+                           Column(
                              children: [
-                               Text(
-                                 'Don\'t have an Account?',
-                               ),
-                               defaultTextButton(
-                                 function: () {
-                                   navigateTo(
-                                     context,
-                                     ParkingRegisterScreen(),
-                                   );
-                                 },
-                                 text: 'Sign Up',
+                               Center(
+                                 child: TextButton(
+                                   style: ButtonStyle(
+                                     // overlayColor: MaterialStateProperty.all(HexColor('12345678')),
+                                     elevation: MaterialStateProperty.all(0),
 
+                                   ),
+                                   onPressed: () {
+                                     navigateTo(context, ForgetPassword());
+                                   },
+                                   child: Text(
+                                     'Forget password?',
+                                     style: TextStyle(
+                                       color: Colors.black,
+                                   //    fontWeight: FontWeight.bold,
+                                     ),
+                                   ),
+                                 ),
                                ),
+
+                               SizedBox(height: 20,),
+                               Row(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Text(
+                                     'Don\'t have an Account?',
+                                   ),
+                                   defaultTextButton(
+                                     function: () {
+                                       navigateTo(
+                                         context,
+                                         ParkingRegisterScreen(),
+                                       );
+                                     },
+                                     text: 'Sign Up',
+
+                                   ),
+
+
+                                 ],
+                               ),
+
                              ],
                            ),
+
                          ],
                        ),
                      ),

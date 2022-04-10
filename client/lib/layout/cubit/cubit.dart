@@ -5,7 +5,7 @@ import 'package:smart_city/layout/cubit/state.dart';
 import 'package:smart_city/models/login_model.dart';
 import 'package:smart_city/modules/home/home_screen.dart';
 import 'package:smart_city/modules/parking/parking_screen.dart';
-import 'package:smart_city/shared/componants/constants.dart';
+import 'package:smart_city/shared/components/constants.dart';
 import 'package:smart_city/shared/network/dio_helper.dart';
 import 'package:smart_city/shared/style/end_point.dart';
 
@@ -48,8 +48,9 @@ class ParkingCubit extends Cubit<ParkingStates> {
     emit(ParkingLoadingUserDataState());
 
     DioHelper.getData(
-      url:  uid,
+      url:  'users/$uid',
        token: token,
+
     ).then((value) {
       userModel = ParkingLoginModel.fromJson(value.data);
       printFullText(userModel.data.username);
@@ -76,7 +77,7 @@ class ParkingCubit extends Cubit<ParkingStates> {
 
    print( '------- $uid');
     DioHelper.putData(
-      url: uid,
+      url: 'users/$uid',
       token: token,
       data: {
 
@@ -98,6 +99,9 @@ class ParkingCubit extends Cubit<ParkingStates> {
       emit(ParkingErrorUpdateState());
     });
   }
+
+
+
 
 
 
