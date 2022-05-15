@@ -21,20 +21,17 @@ exports.getParkingSlots = async (req, res) => {
 
 exports.updateParkingSlots = async (req, res) => {
   try {
-    let { slots } = req.body;
-    if (!slots)
-      return res.status(200).send({
-        status: false,
-        message: "slots array is required",
-        data: null,
-      });
+    let { slots } = req.query;
 
-    const result = await parkingModel.updateParkingSlots(slots);
+    // Convert slots Query string to array of numbers
+    const slotsArr = slots.split(",").map((s) => Number(s));
+
+    const result = await parkingModel.updateParkingSlots(slotsArr);
 
     const { _id, ...data } = result._doc;
     res.status(200).send({
       status: true,
-      message: "Update slots Success",
+      message: "Update slots success",
       data,
     });
   } catch (err) {
