@@ -8,20 +8,16 @@ class ParkingScreen extends StatelessWidget {
   var newController = TextEditingController();
   final List<String> cites = <String>[
     'Cairo',
-    'Cardiff',
-    'Dierb Negm',
-    'El3slogy',
-    'Ela7asania',
+    'Alexandria',
+    'Sharqia',
     'Giza',
-    'Hamburg',
-    'Kafr Saqr',
-    'London',
-    'Lisbon',
-    'Madrid',
-    'Manchester',
-    'Munich',
-    'Milan',
-    'Paris',
+    'Aswan',
+    'Gharbia',
+    'Suez',
+    'Dakahlia',
+    'Ismailia',
+    'Faiyum',
+
   ];
 
 
@@ -35,12 +31,10 @@ class ParkingScreen extends StatelessWidget {
           Container(
 
               child: Padding(
-                padding: EdgeInsets.only(left:size.height*.0246,right:size.height*.001 ),
+                padding: EdgeInsets.only(left:size.height*.0190,right:5 ,top: size.width*.03),
                 child: Row(
                   children: [
-                    /* SizedBox(
-                      width: 12,
-                    ),*/
+
                     InkWell(
                       onTap: () async {
                         showSearch(
@@ -64,7 +58,7 @@ class ParkingScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Padding(
-                              padding:  EdgeInsets.all(8.0),
+                              padding:  EdgeInsets.all(10.0),
                               child: Text(
                                 'Search ...',
                                 style: TextStyle(
@@ -81,7 +75,7 @@ class ParkingScreen extends StatelessWidget {
                                 child: IconButton(
                                   icon: Icon(
                                     Icons.search,
-                                    color: Colors.grey[500],
+                                    color: Colors.blue,
                                   ),
                                   onPressed: () async {
                                     showSearch(
@@ -124,101 +118,101 @@ class ParkingScreen extends StatelessWidget {
 }
 
 Widget buildChatItem(
-    String city,
-    BuildContext context,
-    index,
-    ) =>
+  String city,
+  BuildContext context,
+  index,
+) =>
     InkWell(
-      borderRadius: BorderRadius.all(Radius.circular(40)),
-      onTap: () {
-        navigateTo(
-            context,
-            NumOfParking(
-              city: city,
-            ));
-      },
-      child:Padding(
-        padding: EdgeInsets.only(left: 16,right: 16),
-        child: Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(50),
-                bottomLeft: Radius.circular(10),
-              )),
-          color: Colors.blueGrey[300],
-          child: Padding(
-            padding: EdgeInsets.only(top: 12,left: 10,bottom: 12),
-            child: Container(
-              child: Row(
-                children: [
-                  Stack(
-                    alignment: AlignmentDirectional.bottomEnd,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        radius: 36,
-                        backgroundImage: AssetImage('assets/images/1.jpeg'),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        borderRadius: BorderRadius.all(Radius.circular(40)),
+        onTap: () {
+          navigateTo(
+              context,
+              NumOfParking(
+                city: city,
+              ));
+        },
+        child:Padding(
+        padding: EdgeInsets.only(left: 10,right: 10),
+          child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(50),
+                  bottomLeft: Radius.circular(10),
+                )),
+            color: Colors.blue,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12,left: 10,bottom: 12),
+              child: Container(
+                child: Row(
+                  children: [
+                    Stack(
+                      alignment: AlignmentDirectional.bottomEnd,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '$city',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'Number Of Parking : 10',
-                            ),
-                            Spacer(),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 8.0,
-                                  height: 8.0,
-                                  decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      shape: BoxShape.circle),
-                                ),
-                                SizedBox(
-                                  width: 7,
-                                ),
-                                Text('Available : 7'),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                              ],
-                            ),
-                          ],
+                        CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          radius: 36,
+                          backgroundImage: AssetImage('assets/images/1.jpeg'),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${city}',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'Num of Parking: 10',
+                              ),
+                              Spacer(),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 8.0,
+                                    height: 8.0,
+                                    decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle),
+                                  ),
+                                  SizedBox(
+                                    width: 7,
+                                  ),
+                                  Text('Available : 7'),
+                                  SizedBox(
+                                    width: 12,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ) ,
-      ),
-    );
+          ) ,
+        ),
+        );

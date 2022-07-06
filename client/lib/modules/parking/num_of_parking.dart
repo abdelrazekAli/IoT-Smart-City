@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_city/shared/components/components.dart';
 
 import 'Parking.dart';
@@ -12,28 +11,27 @@ class NumOfParking extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
 
-        appBar: AppBar(
-          title: Text('$city Parking '),
-          backgroundColor: Colors.blueGrey,
-        ),
-        body:SingleChildScrollView(
-          child: Column(
-              children: [
-                ListView.separated(
+    appBar: AppBar(
+      title: Text('$city Parking '),
 
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder:(context,index)=>buildChatItem(context,index),
-                  separatorBuilder:(context,index)=>SizedBox(
-                    height: 10.0,
-                  ),
-                  itemCount: 10,
-                ),
-              ],
+    ),
+    body:SingleChildScrollView(
+      child: Column(
+          children: [
+            ListView.separated(
+
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder:(context,index)=>buildChatItem(context,index),
+              separatorBuilder:(context,index)=>SizedBox(
+                height: 10.0,
+              ),
+              itemCount: 10,
             ),
-          ),
-      );
-
+          ],
+        ),
+      ),
+  );
 }
 
 
@@ -45,7 +43,7 @@ Widget buildChatItem(BuildContext context,index,) =>
       navigateTo(context, Parking(model: 'Parking ${index+1}'));
     },
     child:Card(
-      color: Colors.blueGrey[300],
+      color: Colors.blue,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -98,7 +96,7 @@ Widget buildChatItem(BuildContext context,index,) =>
                       children: [
 
                         Text(
-                          'Number Of slots : 10',
+                          'Number Of slots : 8',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -116,13 +114,11 @@ Widget buildChatItem(BuildContext context,index,) =>
                               width: 12,
                             ),
                             Text(
-                                'Available : 3'
+                                'Available : 6'
                             ),
                             SizedBox(
                               width: 12,
                             ),
-
-
                           ],
                         ),
                       ],

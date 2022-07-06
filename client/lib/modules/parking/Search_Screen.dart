@@ -5,39 +5,17 @@ import 'num_of_parking.dart';
 class CitySearch extends SearchDelegate<String> {
   final cities = [
     'Cairo',
+    'Alexandria',
+    'Sharqia',
     'Giza',
-    'Paris',
-    'Munich',
-    'Hamburg',
-    'Kafr Saqr',
-    'El3slogy',
-    'Ela7asania',
-    'Dierb Negm',
-    'Manchester',
-    'Madrid',
-    'Lisbon',
-    'Milan',
-    'Cardiff',
-    'London',
+    'Aswan',
+    'Gharbia',
+    'Suez',
+    'Dakahlia',
+    'Ismailia',
+    'Faiyum',
   ];
 
-  final recentCities = [
-    'Cairo',
-    'Cardiff',
-    'Dierb Negm',
-    'El3slogy',
-    'Ela7asania',
-    'Giza',
-    'Hamburg',
-    'Kafr Saqr',
-    'London',
-    'Lisbon',
-    'Madrid',
-    'Manchester',
-    'Munich',
-    'Milan',
-    'Paris',
-  ];
 
   @override
   List<Widget> buildActions(BuildContext context) => [
@@ -68,7 +46,7 @@ class CitySearch extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     final suggestions = query.isEmpty
-        ? recentCities
+        ? cities
         : cities.where((city) {
       final cityLower = city.toLowerCase();
       final queryLower = query.toLowerCase();

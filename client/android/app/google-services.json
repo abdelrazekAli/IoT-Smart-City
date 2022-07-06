@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "830491830748",
+    "project_id": "smart-iot-3f520",
+    "storage_bucket": "smart-iot-3f520.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:830491830748:android:e82dcd283ec50c841cc719",
+        "android_client_info": {
+          "package_name": "com.example.smart_city"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "830491830748-ndpcmlgte2gdhbk3t6cnge08t2qipson.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvHhobofNUtacv6OJwJeJ1pDD9968-kkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "830491830748-ndpcmlgte2gdhbk3t6cnge08t2qipson.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

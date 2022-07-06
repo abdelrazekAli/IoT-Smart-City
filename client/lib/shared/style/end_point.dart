@@ -16,6 +16,8 @@ const Password_Reset= 'users/password-reset';
 
 const parking_slots = 'parking/slots';
 
+const degrees ='home/degrees';
+
 
 
 

@@ -53,6 +53,22 @@ dependencies:
   overlay_support:
   flutter_local_notifications:
   connectivity_plus:
+  sleek_circular_slider: ^2.0.1
+  flutter_switch: ^0.3.2
+  ndialog:
+  syncfusion_flutter_gauges: ^19.1.65
+  flutter_zoom_drawer: ^3.0.1
+  mqtt_client:
+  flutter_svg:
+  cloud_firestore:
+  firebase_messaging:
+  firebase_core:
+  onesignal_flutter: ^3.3.2
+  flutter_glow: ^0.2.0
+  weather_icons:
+  flutter_staggered_grid_view: ^0.3.0
+
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons:
@@ -60,7 +76,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons:
+flutter_icons:
+    android: true
+    image_path: "assets/images/icon.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -79,6 +98,9 @@ flutter:
     - family: IconBroken
       fonts:
         - asset: assets/fonts/icons.ttf
+    - family: FunIcons
+      fonts:
+          - asset: assets/fonts/FunIcons.ttf
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

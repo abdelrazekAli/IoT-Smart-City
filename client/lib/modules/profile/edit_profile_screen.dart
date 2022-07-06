@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_city/layout/cubit/cubit.dart';
 import 'package:smart_city/layout/cubit/state.dart';
 import 'package:smart_city/shared/components/components.dart';
-import 'package:smart_city/shared/components/constants.dart';
 import 'package:smart_city/shared/style/icon_broken.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -105,7 +104,7 @@ class EditProfileScreen extends StatelessWidget {
                                       Colors.deepPurpleAccent,
                                       child: CircleAvatar(
                                         radius: 64,
-                                        backgroundImage: AssetImage('assets/images/onboard_1.jpg'),
+                                        backgroundImage: AssetImage('assets/images/onboard_1.png'),
                                       ),
                                     ),
                                     IconButton(

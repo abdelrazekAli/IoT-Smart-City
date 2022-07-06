@@ -5,6 +5,8 @@ import 'package:smart_city/shared/components/constants.dart';
 import 'package:smart_city/shared/network/dio_helper.dart';
 import 'package:smart_city/shared/style/end_point.dart';
 
+import 'states.dart';
+
 
 
 class SlotsCubit extends Cubit<SlotsStates> {
@@ -16,10 +18,10 @@ class SlotsCubit extends Cubit<SlotsStates> {
 
   ParkingSlotsModel slotsModel;
 
-  void getSlotsData() {
+  Future getSlotsData() async{
     emit(ParkingLoadingSlotsState());
 
-    DioHelper.getData(
+    await DioHelper.getData(
       url: parking_slots,
       token: token,
 

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_city/layout/cubit/state.dart';
@@ -7,7 +6,7 @@ import 'package:smart_city/modules/home/home_screen.dart';
 import 'package:smart_city/modules/parking/parking_screen.dart';
 import 'package:smart_city/shared/components/constants.dart';
 import 'package:smart_city/shared/network/dio_helper.dart';
-import 'package:smart_city/shared/style/end_point.dart';
+
 
 class ParkingCubit extends Cubit<ParkingStates> {
   ParkingCubit() : super(ParkingInitialStates());
@@ -41,15 +40,14 @@ class ParkingCubit extends Cubit<ParkingStates> {
 
 
 
- ParkingLoginModel userModel;
+  ParkingLoginModel userModel;
 
-  void getUserData()
-  {
+  Future getUserData () async {
     emit(ParkingLoadingUserDataState());
 
-    DioHelper.getData(
+     await DioHelper.getData(
       url:  'users/$uid',
-       token: token,
+      token: token,
 
     ).then((value) {
       userModel = ParkingLoginModel.fromJson(value.data);
@@ -65,7 +63,7 @@ class ParkingCubit extends Cubit<ParkingStates> {
 
   void updateUserData({
 
-  @required String username,
+    @required String username,
     @required String email,
     @required String phone,
     @required String carStr,
@@ -75,13 +73,13 @@ class ParkingCubit extends Cubit<ParkingStates> {
   {
     emit(ParkingLoadingUpdateState());
 
-   print( '------- $uid');
+    print( '------- $uid');
     DioHelper.putData(
       url: 'users/$uid',
       token: token,
       data: {
 
-         'username' : username,
+        'username' : username,
         'email' : email,
         'phone' : phone,
         'carStr' :carStr,
@@ -99,10 +97,5 @@ class ParkingCubit extends Cubit<ParkingStates> {
       emit(ParkingErrorUpdateState());
     });
   }
-
-
-
-
-
 
 }
