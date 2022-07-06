@@ -13,7 +13,7 @@ exports.getParkingSlots = async (req, res) => {
   } catch (err) {
     res.status(200).send({
       status: false,
-      message: "Faild to get slots",
+      message: "Faild to get parking slots",
       data: null,
     });
   }
@@ -21,25 +21,39 @@ exports.getParkingSlots = async (req, res) => {
 
 exports.updateParkingSlots = async (req, res) => {
   try {
-    let { slots } = req.query;
+    let { slots } = req.body;
+    console.log(slots);
+    // Check for slots
+    if (!slots) {
+      return res.status(200).send({
+        status: false,
+        message: "slots are required",
+        data: null,
+      });
+    }
 
-    // Convert slots Query string to array of numbers
-    const slotsArr = slots.split(",").map((s) => Number(s));
+    // Convert slots string to array of binary numbers
+    const slotsArr = slots
+      .slice(1, slots.length - 1)
+      .split(",")
+      .map((s) => Number(s));
 
+    // Update slots in DB
     const result = await parkingModel.updateParkingSlots(slotsArr);
 
+    // Response
     const { _id, ...data } = result._doc;
-    res.status(200).send({
+    return res.status(200).send({
       status: true,
       message: "Update slots success",
       data,
     });
   } catch (err) {
-    res.status(200).send({
+    console.log(err);
+    return res.status(200).send({
       status: false,
       message: "Failed to update slots",
       data: null,
     });
-    console.log(err);
   }
 };

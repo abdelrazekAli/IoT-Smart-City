@@ -1,10 +1,14 @@
 const router = require("express").Router();
 const {
-  updateHomeTemp,
-  getHomeTemp,
+  getHomeDegrees,
+  updateHomeDegrees,
+  getHomeLights,
+  updateHomeLights,
 } = require("../controllers/home.controller");
 
-router.get("/temp", getHomeTemp);
-router.post("/temp", updateHomeTemp);
+router.get("/degrees", getHomeDegrees);
+router.post("/degrees", updateHomeDegrees);
+router.get("/lights", getHomeLights);
+router.post("/lights", updateHomeLights);
 
 module.exports = router;
