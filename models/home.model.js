@@ -5,7 +5,10 @@ const connectOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const homeSchema = mongoose.Schema(
   {
     degrees: Array,
-    lights: Array,
+    led1: Number,
+    led2: Number,
+    led3: Number,
+    led4: Number,
   },
   { versionKey: false }
 );
@@ -61,12 +64,12 @@ exports.updateHomeLights = async (data) => {
     const result = await Home.findOneAndUpdate(
       {},
       {
-        lights: data,
+        $set: data,
       },
       { new: true, upsert: true }
     );
     mongoose.disconnect();
-    return result.lights;
+    return result;
   } catch (err) {
     mongoose.disconnect();
     throw new Error(err);

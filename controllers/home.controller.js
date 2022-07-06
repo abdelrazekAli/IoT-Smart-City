@@ -60,12 +60,12 @@ exports.updateHomeDegrees = async (req, res) => {
 exports.getHomeLights = async (req, res) => {
   try {
     const result = await homeModel.getHomeLights();
-    const { lights } = result._doc;
+    const { _id, degrees, ...data } = result._doc;
 
     res.status(200).json({
       status: true,
       message: "",
-      data: { lights },
+      data,
     });
   } catch (err) {
     console.log(err);
@@ -79,31 +79,24 @@ exports.getHomeLights = async (req, res) => {
 
 exports.updateHomeLights = async (req, res) => {
   try {
-    let { lights } = req.body;
-
     // Check for lights
-    if (!lights) {
+    if (Object.keys(req.body).length === 0) {
       return res.status(200).send({
         status: false,
-        message: "lights are required",
+        message: "data is required",
         data: null,
       });
     }
 
-    // Convert lights string to array of binary numbers
-    const lightsArr = lights
-      .slice(1, lights.length - 1)
-      .split(",")
-      .map((s) => Number(s));
-
     // Update lights in DB
-    const result = await homeModel.updateHomeLights(lightsArr);
+    const result = await homeModel.updateHomeLights(req.body);
+    const { _id, degrees, ...data } = result._doc;
 
     // Response
     return res.status(200).send({
       status: true,
       message: "Update home lights success",
-      data: { lights: result },
+      data,
     });
   } catch (err) {
     console.log(err);
