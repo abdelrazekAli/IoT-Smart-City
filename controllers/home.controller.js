@@ -42,11 +42,10 @@ exports.updateHomeDegrees = async (req, res) => {
     const result = await homeModel.updateHomeDegrees(degreesArr);
 
     // Response
-    const { _id, ...data } = result._doc;
     return res.status(200).send({
       status: true,
       message: "Update home degrees success",
-      data,
+      data: { degrees: result },
     });
   } catch (err) {
     console.log(err);
@@ -101,11 +100,10 @@ exports.updateHomeLights = async (req, res) => {
     const result = await homeModel.updateHomeLights(lightsArr);
 
     // Response
-    const { _id, ...data } = result._doc;
     return res.status(200).send({
       status: true,
       message: "Update home lights success",
-      data,
+      data: { lights: result },
     });
   } catch (err) {
     console.log(err);

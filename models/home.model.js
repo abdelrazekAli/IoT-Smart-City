@@ -36,7 +36,7 @@ exports.updateHomeDegrees = async (data) => {
       { new: true, upsert: true }
     );
     mongoose.disconnect();
-    return result;
+    return result.degrees;
   } catch (err) {
     mongoose.disconnect();
     throw new Error(err);
@@ -66,7 +66,7 @@ exports.updateHomeLights = async (data) => {
       { new: true, upsert: true }
     );
     mongoose.disconnect();
-    return result;
+    return result.lights;
   } catch (err) {
     mongoose.disconnect();
     throw new Error(err);
