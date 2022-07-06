@@ -69,6 +69,7 @@ exports.getHomeLights = async (req, res) => {
       data: { lights },
     });
   } catch (err) {
+    console.log(err);
     res.status(200).send({
       status: false,
       message: "Faild to get home lights",

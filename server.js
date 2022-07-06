@@ -4,6 +4,18 @@ const http = require("http");
 const server = http.createServer(app);
 const cors = require("cors");
 const dotenv = require("dotenv").config();
+const rateLimit = require("express-rate-limit");
+
+// if we're behind a reverse proxy
+app.set("trust proxy", 1);
+
+// limit requests number to APIs
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests, please try again later.",
+});
+app.use(limiter);
 
 // Import Routes
 const userRouter = require("./routes/user.route");
