@@ -9,6 +9,8 @@ const homeSchema = mongoose.Schema(
     led2: Number,
     led3: Number,
     led4: Number,
+    led5: Number,
+    led6: Number,
   },
   { versionKey: false }
 );
