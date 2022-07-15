@@ -5,6 +5,7 @@ const connectOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const homeSchema = mongoose.Schema(
   {
     degrees: Array,
+    password: Number,
     led1: Number,
     led2: Number,
     led3: Number,
@@ -17,11 +18,10 @@ const homeSchema = mongoose.Schema(
 
 const Home = mongoose.model("home", homeSchema);
 
-exports.getHomeDegrees = async () => {
+exports.getHomeData = async () => {
   try {
     await mongoose.connect(DB_URL, connectOptions);
     const result = await Home.findOne();
-    console.log("result", result);
     mongoose.disconnect();
     return result;
   } catch (err) {
@@ -48,12 +48,18 @@ exports.updateHomeDegrees = async (data) => {
   }
 };
 
-exports.getHomeLights = async () => {
+exports.updateHomePass = async (pass) => {
   try {
     await mongoose.connect(DB_URL, connectOptions);
-    const result = await Home.findOne();
+    const result = await Home.findOneAndUpdate(
+      {},
+      {
+        password: pass,
+      },
+      { new: true, upsert: true }
+    );
     mongoose.disconnect();
-    return result;
+    return result.password;
   } catch (err) {
     mongoose.disconnect();
     throw new Error(err);

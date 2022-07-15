@@ -2,7 +2,7 @@ const homeModel = require("../models/home.model");
 
 exports.getHomeDegrees = async (req, res) => {
   try {
-    const result = await homeModel.getHomeDegrees();
+    const result = await homeModel.getHomeData();
     const { degrees } = result._doc;
 
     res.status(200).json({
@@ -11,6 +11,7 @@ exports.getHomeDegrees = async (req, res) => {
       data: { degrees },
     });
   } catch (err) {
+    console.log(err);
     res.status(200).send({
       status: false,
       message: "Faild to get home degrees",
@@ -59,7 +60,7 @@ exports.updateHomeDegrees = async (req, res) => {
 
 exports.getHomeLights = async (req, res) => {
   try {
-    const result = await homeModel.getHomeLights();
+    const result = await homeModel.getHomeData();
     const { _id, degrees, ...data } = result._doc;
 
     res.status(200).json({
@@ -103,6 +104,57 @@ exports.updateHomeLights = async (req, res) => {
     return res.status(200).send({
       status: false,
       message: "Failed to update home lights",
+      data: null,
+    });
+  }
+};
+
+exports.getHomePass = async (req, res) => {
+  try {
+    const result = await homeModel.getHomeData();
+    const { password } = result._doc;
+
+    res.status(200).json({
+      status: true,
+      message: "",
+      data: { password },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(200).send({
+      status: false,
+      message: "Faild to get home password",
+      data: null,
+    });
+  }
+};
+
+exports.updateHomePass = async (req, res) => {
+  try {
+    const { password } = req.body;
+    // Check for password
+    if (!password) {
+      return res.status(200).send({
+        status: false,
+        message: "password is required",
+        data: null,
+      });
+    }
+
+    // Update password in DB
+    const result = await homeModel.updateHomePass(password);
+
+    // Response
+    return res.status(200).send({
+      status: true,
+      message: "Update home password success",
+      data: { password: result },
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(200).send({
+      status: false,
+      message: "Failed to update home password",
       data: null,
     });
   }
