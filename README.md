@@ -1,6 +1,6 @@
 # IoT Smart City (Home , Parking)
 
-> A Graduation project that provides the ability to remotely monitor, control devices, and take actions from streams of real-time data to home and parking via a mobile application using IoT technology.
+> A Graduation project that provides the ability to remotely monitor, control devices, and take actions from streams of real-time data to home and parking via a mobile application using IoT technology, Node.js, MongoDB, and Flutter.
 
 ## Download App
 <a href="https://github.com/abdelrazekAli/IoT-Smart-City/releases/download/v1.0.0/smart_city.apk"><img src="https://playerzon.com/asset/download.png" width="200"></img></a>
